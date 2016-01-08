@@ -12,10 +12,15 @@ client.on('connect', function () {
 	var lon = Math.random() * 10;
 	var beacon = beam_util.create_beacon(lat, lon);
 	client.publish(outgoing_channel, JSON.stringify(beacon));
+	setTimeout(function() {
+		var beacon = beam_util.create_beacon(lat, lon);
+		client.publish(outgoing_channel, JSON.stringify(beacon));
+	}, 1000);
 });
 
 client.on('message', function(topic, message_buffer) {
 	var message = message_buffer.toString();
 	var beams = JSON.parse(message);
 	console.log(beams);
+	console.log('');
 });
