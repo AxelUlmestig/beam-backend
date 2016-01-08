@@ -90,10 +90,45 @@ var add_beam = function(b1, b2, cb) {
 var is_active = function(beacon, cb) {
 	var now = Math.floor(Date.now() / 1000);
 	var active = beacon.timestamp > now - BEACON_DURATION;
-	if(cb) {
+	if(cb && typeof(cb) == 'function') {
 		cb(active);
 	}
 	return active;
+}
+
+var contains_inactive = function(beam, cb) {
+	if(beam.timestamp) {
+		return !is_active(beam, cb);
+	} else {
+		var active_beacons = beam.beacons.filter(is_active);
+		return active_beacons.length < beam.beacons.length;
+	}
+}
+
+var beacon_equals = function(b1, b2) {
+	for(var attr in b1) {
+		if(b1[attr] != b2[attr]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+var contains_beacon = function(beacon, beam, cb) {
+	var response = false;
+
+	if(beacon_equals(beacon, beam)) {
+		response = true;
+	}
+	else if(beam.beacons) {
+		var match = beam.beacons.filter(function(b){
+			return beacon_equals(b, beacon);
+		})[0];
+	}
+	if(cb) {
+		cb(response);
+	}
+	return response;
 }
 
 module.exports = {
@@ -101,5 +136,8 @@ module.exports = {
 	create_beam: create_beam,
 	add_beam: add_beam,
 	beams_overlapping: beams_overlapping,
-	is_active: is_active
+	is_active: is_active,
+	beacon_equals: beacon_equals,
+	contains_beacon: contains_beacon,
+	contains_inactive: contains_inactive
 }

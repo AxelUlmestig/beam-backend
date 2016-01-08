@@ -10,11 +10,28 @@ var add_beacon = function(beacon, beams, cb) {
 	reduce_beam_list(beams, cb);
 }
 
-var refresh_beams = function(beams, cb) {
-	deconstruct_beams(beams, function(beacons) {
+var refresh_beam = function(beam, cb) {
+	deconstruct_beams([beam], function(beacons) {
 		async.filter(beacons, beam_util.is_active, function(active_beacons){
 			reduce_beam_list(active_beacons, cb);
 		});
+	});
+}
+
+var refresh_beams = function(beams, cb) {
+	var fresh_beams = [];
+	async.each(beams, function(beam, each_cb) {
+		if(beam_util.contains_inactive(beam)) {
+			refresh_beam(beam, function(reconstructed_beams) {
+				fresh_beams = fresh_beams.concat(reconstructed_beams);
+				each_cb();
+			});
+		} else {
+			fresh_beams.push(beam);
+			each_cb();
+		}
+	}, function(err) {
+		cb(fresh_beams);
 	});
 }
 
@@ -59,7 +76,6 @@ var deconstruct_beams = function(beams, cb) {
 
 module.exports = {
 	reduce_beam_list: reduce_beam_list,
-	deconstruct_beams: deconstruct_beams,
 	add_beacon: add_beacon,
 	refresh_beams: refresh_beams
 }
