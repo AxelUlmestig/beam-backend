@@ -2,7 +2,7 @@ var mqtt = require('mqtt');
 var Beam = require('./beam');
 var refreshBeams = require('./refresh_beams');
 var reduceBeams = require('./reduce_beams');
-var Constants = require('./beam_constants');
+var Constants = require('./constants');
 
 var client = mqtt.connect(Constants.HOST);
 var incomingChannel = Constants.PUBLISH_CHANNEL;

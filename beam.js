@@ -1,5 +1,5 @@
 var mathjs = require('mathjs');
-var Constants = require('./beam_constants');
+var Constants = require('./constants');
 
 createPhoton = function(lat, lon) {
         var timestamp = Date.now() / 1000;
