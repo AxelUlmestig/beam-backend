@@ -26,6 +26,11 @@ describe('basic beam functions', function(){
                         var distance = getDistance(b1, b2);
                         expect(distance).to.be.closeTo(5, 0.001);
                 });
+                it('timestamp', function(){
+                        var p = Beam.createPhoton(0, 0);
+                        var ts = Beam.getTimestamp(p);
+                        expect(ts).to.equal(p.timestamp);
+                });
         });
         describe('beam', function(){
                 it('radius', function(){
@@ -52,6 +57,14 @@ describe('basic beam functions', function(){
                         var beam = Beam.addBeams(b1, b2);
                         var distance = getDistance(b1, beam);
                         expect(distance).to.be.closeTo(5, 0.001);
+                });
+                it('timestamp', function(){
+                        var p1 = Beam.createPhoton(0, 0);
+                        var p2 = Beam.createPhoton(1, 1);
+                        p1.timestamp = 0;
+                        var beacon = Beam.addBeams(p1, p2);
+                        var ts = Beam.getTimestamp(beacon);
+                        expect(ts).to.equal(Math.min(p1.timestamp, p2.timestamp));
                 });
         });
 });
