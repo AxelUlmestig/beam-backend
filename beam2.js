@@ -61,11 +61,26 @@ addBeams = function(b1, b2) {
         }
 }
 
+stringify = function(beam) {
+        var position = getPosition(beam);
+        var lat = position._data[0];
+        var lon = position._data[1];
+        var minified = {
+                radius: getRadius(beam),
+                position: {
+                        lat: lat,
+                        lon: lon
+                }
+        }
+        return JSON.stringify(minified);
+}
+
 module.exports = {
         createPhoton: createPhoton,
         getPosition: getPosition,
         getRadius: getRadius,
         getTimestamp: getTimestamp,
         getDistance: getDistance,
-        addBeams: addBeams
+        addBeams: addBeams,
+        stringify: stringify
 }
