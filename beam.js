@@ -2,7 +2,7 @@ var mathjs = require('mathjs');
 var Constants = require('./beam_constants');
 
 createPhoton = function(lat, lon) {
-        var timestamp = Date.now();
+        var timestamp = Date.now() / 1000;
         return {
                 radius: Constants.BEACON_RADIUS,
                 timestamp: timestamp,
