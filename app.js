@@ -1,65 +1,34 @@
 var mqtt = require('mqtt');
-var constants = require('./beam_constants');
-var track_beams = require('./track_beams');
+var Beam = require('./beam');
+var refreshBeams = require('./refresh_beams');
+var reduceBeams = require('./reduce_beams');
+var Constants = require('./beam_constants');
 
-var client  = mqtt.connect('mqtt://test.mosquitto.org');
-var incoming_channel = constants.PUBLISH_CHANNEL;
-var outgoing_channel = constants.UPDATES_CHANNEL;
+var client = mqtt.connect(Constants.HOST);
+var incomingChannel = Constants.PUBLISH_CHANNEL;
+var outgoingChannel = Constants.UPDATES_CHANNEL;
 
 var beams = [];
 
-var update_beams = function(updated_beams) {
-	beams = updated_beams;
-	client.publish(outgoing_channel, JSON.stringify(beams));
-}
-
 client.on('connect', function () {
-	client.subscribe(incoming_channel);
+        console.log('connected');
+	client.subscribe(incomingChannel);
 });
  
 client.on('message', function (topic, message_buffer) {
-	var beacon = JSON.parse(message_buffer.toString());
-	beacon.timestamp = Math.floor(Date.now() / 1000);
-	//TODO validate beacon
-	track_beams.add_beacon(beacon, beams, update_beams);
-	setTimeout(function(){
-		track_beams.refresh_beams(beams, update_beams);
-	}, constants.BEACON_DURATION * 1000);
+        console.log('message received');
+        var message = JSON.parse(message_buffer.toString());
+        
+        //TODO validate data
+        var photon = Beam.createPhoton(message.lat, message.lon);
+        beams.push(photon);
+        beams = reduceBeams(beams);
+        publish();
+        setTimeout(publish, Constants.BEACON_DURATION * 1000);
 });
 
-
-
-/*
- * Bluemix refuses to run the program without a web server, so here's the template code for it...
- *
- */
-
-/*eslint-env node*/
-
-//------------------------------------------------------------------------------
-// node.js starter application for Bluemix
-//------------------------------------------------------------------------------
-
-// This application uses express as its web server
-// for more info, see: http://expressjs.com
-var express = require('express');
-
-// cfenv provides access to your Cloud Foundry environment
-// for more info, see: https://www.npmjs.com/package/cfenv
-var cfenv = require('cfenv');
-
-// create a new express server
-var app = express();
-
-// serve the files out of ./public as our main files
-app.use(express.static(__dirname + '/public'));
-
-// get the app environment from Cloud Foundry
-var appEnv = cfenv.getAppEnv();
-
-// start server on the specified port and binding host
-app.listen(appEnv.port, '0.0.0.0', function() {
-
-	// print a message when the server starts listening
-  console.log("server starting on " + appEnv.url);
-});
+function publish() {
+        beams = refreshBeams(beams);
+        client.publish(outgoingChannel, Beam.stringify(beams));
+        console.log('published beams: ' + Beam.stringify(beams));
+}
