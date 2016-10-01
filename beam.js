@@ -67,10 +67,8 @@ var simplify = function(beam) {
         var lon = position._data[1];
         var simplified = {
                 radius: getRadius(beam),
-                position: {
-                        lat: lat,
-                        lon: lon
-                }
+                lat: lat,
+                lon: lon
         }
         return simplified;
 }
