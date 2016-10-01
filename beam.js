@@ -1,143 +1,95 @@
-/*
- * Contains functins applied to indiviual beams or beacons
- */
+var mathjs = require('mathjs');
+var Constants = require('./beam_constants');
 
-var async = require('async');
-var constants = require('./beam_constants');
-var BEACON_RADIUS = constants.BEACON_RADIUS;
-var BEACON_DURATION = constants.BEACON_DURATION;
-
-var create_beacon = function(lat, lon) {
-	return {
-		lat: lat,
-		lon: lon,
-		radius: BEACON_RADIUS,
-		timestamp: Math.floor(Date.now() / 1000)
-	};
+createPhoton = function(lat, lon) {
+        var timestamp = Date.now();
+        return {
+                radius: Constants.BEACON_RADIUS,
+                timestamp: timestamp,
+                position: mathjs.matrix([lat, lon]),
+                isPhoton: true
+        }
 }
 
-var create_beam = function(beacon) {
-	if(beacon.beacons) {
-		return beacon;
-	}
-	return {
-		lat: beacon.lat,
-		lon: beacon.lon,
-		radius: beacon.radius,
-		beacons: [beacon]
-	};
+getPosition = function(beam) {
+        if(beam.position) {
+                return beam.position;
+        }
+        var position1 = getPosition(beam.beam1);
+        var position2 = getPosition(beam.beam2);
+        var weight1 = Math.pow(getRadius(beam.beam1), 2);
+        var weight2 = Math.pow(getRadius(beam.beam2), 2);
+        var weightedPos1 = mathjs.multiply(position1, weight1);
+        var weightedPos2 = mathjs.multiply(position2, weight2);
+        var sum = mathjs.add(weightedPos1, weightedPos2);
+        var weightedSum = mathjs.multiply(sum, Math.pow(weight1 + weight2, -1));
+        beam.position = weightedSum;
+        return weightedSum;
 }
 
-var get_distance = function(b1, b2) {
-	lat_diff = b1.lat - b2.lat;
-	lon_diff = b1.lon - b2.lon;
-	return Math.sqrt(Math.pow(lat_diff, 2) + Math.pow(lon_diff, 2));
+getRadius = function(beam) {
+        if(beam.radius) {
+                return beam.radius;
+        }
+        var r1 = getRadius(beam.beam1);
+        var r2 = getRadius(beam.beam2);
+        beam.radius = Math.sqrt(Math.pow(r1, 2) + Math.pow(r2, 2));
+        return beam.radius;
 }
 
-var beams_overlapping = function(b1, b2) {
-	var r1 = b1.radius;
-	var r2 = b2.radius;
-	var r1_2 = Math.pow(r1, 2);
-	var r2_2 = Math.pow(r2, 2);
-	var diff = get_distance(b1, b2);
-	return diff < 2*Math.sqrt(r1_2 + r2_2) - r1 - r2;
+getTimestamp = function(beam) {
+        if(beam.timestamp != null) {
+                return beam.timestamp;
+        }
+        var ts1 = getTimestamp(beam.beam1);
+        var ts2 = getTimestamp(beam.beam2);
+        beam.timestamp = Math.min(ts1, ts2);
+        return beam.timestamp;
 }
 
-var update_position = function(b, cb) {
-	var pos = {
-		lat: 0,
-		lon: 0
-	};
-	async.reduce(b.beacons, pos, function(memo, beacon, cb) {
-		memo.lat += beacon.lat;
-		memo.lon += beacon.lon;
-		cb(null, memo);
-	}, function(err, result) {
-		b.lat = result.lat / b.beacons.length;
-		b.lon = result.lon / b.beacons.length;
-		cb();
-	});
+getDistance = function(b1, b2) {
+        var pos1 = getPosition(b1);
+        var pos2 = getPosition(b2);
+        var difference = mathjs.subtract(pos1, pos2);
+        return mathjs.norm(difference);
 }
 
-var update_radius = function(b, cb) {
-	async.reduce(b.beacons, 0, function(memo, beacon, cb) {
-		var radius = beacon.radius;
-		cb(null, memo + radius * radius);
-	}, function(err, square_sums){
-		var new_radius = Math.sqrt(square_sums);
-		b.radius = new_radius;
-		cb();
-	});
+addBeams = function(b1, b2) {
+        return {
+                beam1: b1,
+                beam2: b2
+        }
 }
 
-var update_beam = function(b, cb) {
-	async.series([function(cb) {
-		update_position(b, cb);
-	}, function(cb) {
-		update_radius(b, cb);
-	}], cb);
+var simplify = function(beam) {
+        var position = getPosition(beam);
+        var lat = position._data[0];
+        var lon = position._data[1];
+        var simplified = {
+                radius: getRadius(beam),
+                position: {
+                        lat: lat,
+                        lon: lon
+                }
+        }
+        return simplified;
 }
 
-var add_beam = function(b1, b2, cb) {
-	var b1 = create_beam(b1);
-	var b2 = create_beam(b2);
-	b1.beacons = b1.beacons.concat(b2.beacons);
-	update_beam(b1, function(error){
-		cb(error, b1);
-	});
-}
-
-var is_active = function(beacon, cb) {
-	var now = Math.floor(Date.now() / 1000);
-	var active = beacon.timestamp > now - BEACON_DURATION;
-	if(cb && typeof(cb) == 'function') {
-		cb(active);
-	}
-	return active;
-}
-
-var contains_inactive = function(beam, cb) {
-	if(beam.timestamp) {
-		return !is_active(beam, cb);
-	} else {
-		var active_beacons = beam.beacons.filter(is_active);
-		return active_beacons.length < beam.beacons.length;
-	}
-}
-
-var beacon_equals = function(b1, b2) {
-	for(var attr in b1) {
-		if(b1[attr] != b2[attr]) {
-			return false;
-		}
-	}
-	return true;
-}
-
-var contains_beacon = function(beacon, beam, cb) {
-	var response = false;
-
-	if(beacon_equals(beacon, beam)) {
-		response = true;
-	}
-	else if(beam.beacons) {
-		var match = beam.beacons.filter(function(b){
-			return beacon_equals(b, beacon);
-		})[0];
-	}
-	if(cb) {
-		cb(response);
-	}
-	return response;
+stringify = function(beam) {
+        if(Array.isArray(beam)) {
+                var simpleBeams = beam.map(simplify);
+                return JSON.stringify(simpleBeams);
+        }
+        var simplified = simplify(beam);
+        return JSON.stringify(simplified);
 }
 
 module.exports = {
-	create_beacon: create_beacon,
-	create_beam: create_beam,
-	add_beam: add_beam,
-	beams_overlapping: beams_overlapping,
-	is_active: is_active,
-	beacon_equals: beacon_equals,
-	contains_beacon: contains_beacon,
-	contains_inactive: contains_inactive
+        createPhoton: createPhoton,
+        getPosition: getPosition,
+        getRadius: getRadius,
+        getTimestamp: getTimestamp,
+        getDistance: getDistance,
+        addBeams: addBeams,
+        stringify: stringify
 }

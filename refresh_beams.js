@@ -1,4 +1,4 @@
-var Beam = require('./beam2.js');
+var Beam = require('./beam.js');
 var Constants = require('./beam_constants.js');
 var reduceBeams = require('./reduce_beams.js');
 
