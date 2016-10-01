@@ -1,7 +1,7 @@
 {
-  "name": "NodejsStarterApp",
+  "name": "Beam-backend-node",
   "version": "0.0.1",
-  "description": "A sample nodejs app for Bluemix",
+  "description": "A client that organizes beams",
   "scripts": {
     "start": "node app.js",
     "test": "./node_modules/.bin/mocha --reporter spec"
