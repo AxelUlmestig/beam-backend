@@ -6,7 +6,8 @@ createPhoton = function(lat, lon) {
         return {
                 radius: Constants.BEACON_RADIUS,
                 timestamp: timestamp,
-                position: mathjs.matrix([lat, lon])
+                position: mathjs.matrix([lat, lon]),
+                isPhoton: true
         }
 }
 
