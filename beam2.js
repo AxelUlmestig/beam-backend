@@ -61,18 +61,27 @@ addBeams = function(b1, b2) {
         }
 }
 
-stringify = function(beam) {
+var simplify = function(beam) {
         var position = getPosition(beam);
         var lat = position._data[0];
         var lon = position._data[1];
-        var minified = {
+        var simplified = {
                 radius: getRadius(beam),
                 position: {
                         lat: lat,
                         lon: lon
                 }
         }
-        return JSON.stringify(minified);
+        return simplified;
+}
+
+stringify = function(beam) {
+        if(Array.isArray(beam)) {
+                var simpleBeams = beam.map(simplify);
+                return JSON.stringify(simpleBeams);
+        }
+        var simplified = simplify(beam);
+        return JSON.stringify(simplified);
 }
 
 module.exports = {
