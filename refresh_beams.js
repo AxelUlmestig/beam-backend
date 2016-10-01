@@ -24,7 +24,7 @@ var refreshBeam = function(timestamp, beam) {
 }
 
 module.exports = function(beams) {
-        var timestamp = Math.floor(Date.now() / 1000);
+        var timestamp = Date.now() / 1000;
         var refreshed = refreshBeams(timestamp, beams);
         var reduced = reduceBeams(refreshed);
         return reduced;
