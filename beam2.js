@@ -38,7 +38,7 @@ getRadius = function(beam) {
 }
 
 getTimestamp = function(beam) {
-        if(beam.timestamp) {
+        if(beam.timestamp != null) {
                 return beam.timestamp;
         }
         var ts1 = getTimestamp(beam.beam1);
