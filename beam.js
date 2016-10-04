@@ -1,5 +1,5 @@
 var Vector = require('./vector');
-var Constants = require('./constants');
+var Constants = require('./constants.json');
 
 createPhoton = function(lat, lon) {
         var timestamp = Date.now() / 1000;

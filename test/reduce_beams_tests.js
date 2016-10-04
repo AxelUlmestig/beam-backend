@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 var Beam = require('../beam.js');
-var Constants = require('../constants');
+var Constants = require('../constants.json');
 var reduceBeams = require('../reduce_beams.js');
 
 describe('reduceBeams', function(){
