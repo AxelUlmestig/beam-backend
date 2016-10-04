@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
-var refreshBeams = require('../refresh_beams.js');
-var Beam = require('../beam.js');
+var refreshBeams = require('../refresh_beams');
+var Beam = require('../beam');
 
 describe('refresh beams', function(){
         it('one old, one fresh', function(){

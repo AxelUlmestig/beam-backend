@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
-var Beam = require('../beam.js');
+var Beam = require('../beam');
 var Constants = require('../constants.json');
-var reduceBeams = require('../reduce_beams.js');
+var reduceBeams = require('../reduce_beams');
 
 describe('reduceBeams', function(){
         it('two close photons', function(){

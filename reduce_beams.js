@@ -1,4 +1,4 @@
-var Beam = require('./beam.js');
+var Beam = require('./beam');
 
 var reduceBeams = function(beams) {
         if(beams.length <= 1) {

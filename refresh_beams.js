@@ -1,6 +1,6 @@
-var Beam = require('./beam.js');
+var Beam = require('./beam');
 var Constants = require('./constants.json');
-var reduceBeams = require('./reduce_beams.js');
+var reduceBeams = require('./reduce_beams');
 
 var refreshBeams = function(timestamp, beams) {
         var refreshed = [];

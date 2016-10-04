@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
-var Vector = require('../vector.js');
-var Beam = require('../beam.js');
+var Vector = require('../vector');
+var Beam = require('../beam');
 var Constants = require('../constants.json');
 
 describe('basic beam functions', function(){
