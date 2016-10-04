@@ -3,12 +3,10 @@ var Constants = require('./constants.json');
 var reduceBeams = require('./reduce_beams');
 
 var refreshBeams = function(timestamp, beams) {
-        var refreshed = [];
-        beams.forEach(function(beam) {
-                var refreshedBeam = refreshBeam(timestamp, beam);
-                refreshed = refreshed.concat(refreshedBeam);
-        });
-        return refreshed;
+	return beams.reduce(function(refreshed, beam){
+		var refreshedBeam = refreshBeam(timestamp, beam);
+		return refreshed.concat(refreshedBeam);
+	}, []);
 }
 
 var refreshBeam = function(timestamp, beam) {
