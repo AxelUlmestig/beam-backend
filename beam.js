@@ -1,4 +1,4 @@
-var mathjs = require('mathjs');
+var Vector = require('./vector');
 var Constants = require('./constants');
 
 createPhoton = function(lat, lon) {
@@ -6,7 +6,7 @@ createPhoton = function(lat, lon) {
         return {
                 radius: Constants.BEACON_RADIUS,
                 timestamp: timestamp,
-                position: mathjs.matrix([lat, lon]),
+                position: [lat, lon],
                 isPhoton: true
         }
 }
@@ -19,10 +19,10 @@ getPosition = function(beam) {
         var position2 = getPosition(beam.beam2);
         var weight1 = Math.pow(getRadius(beam.beam1), 2);
         var weight2 = Math.pow(getRadius(beam.beam2), 2);
-        var weightedPos1 = mathjs.multiply(position1, weight1);
-        var weightedPos2 = mathjs.multiply(position2, weight2);
-        var sum = mathjs.add(weightedPos1, weightedPos2);
-        var weightedSum = mathjs.multiply(sum, Math.pow(weight1 + weight2, -1));
+        var weightedPos1 = Vector.multiply(position1, weight1);
+        var weightedPos2 = Vector.multiply(position2, weight2);
+        var sum = Vector.add(weightedPos1, weightedPos2);
+        var weightedSum = Vector.multiply(sum, Math.pow(weight1 + weight2, -1));
         beam.position = weightedSum;
         return weightedSum;
 }
@@ -50,8 +50,8 @@ getTimestamp = function(beam) {
 getDistance = function(b1, b2) {
         var pos1 = getPosition(b1);
         var pos2 = getPosition(b2);
-        var difference = mathjs.subtract(pos1, pos2);
-        return mathjs.norm(difference);
+        var distance = Vector.distance(pos1, pos2);
+        return distance;
 }
 
 addBeams = function(b1, b2) {
@@ -63,14 +63,11 @@ addBeams = function(b1, b2) {
 
 var simplify = function(beam) {
         var position = getPosition(beam);
-        var lat = position._data[0];
-        var lon = position._data[1];
-        var simplified = {
+        return {
                 radius: getRadius(beam),
-                lat: lat,
-                lon: lon
+                lat: position[0],
+                lon: position[1]
         }
-        return simplified;
 }
 
 stringify = function(beam) {

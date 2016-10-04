@@ -29,6 +29,9 @@ client.on('message', function (topic, message_buffer) {
 
 function publish() {
         beams = refreshBeams(beams);
-        client.publish(outgoingChannel, Beam.stringify(beams));
+	var options = {
+		retain: true
+	};
+        client.publish(outgoingChannel, Beam.stringify(beams), options);
         console.log('published beams: ' + Beam.stringify(beams));
 }

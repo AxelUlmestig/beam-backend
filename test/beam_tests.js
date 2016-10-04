@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
-var mathjs = require('mathjs');
+var Vector = require('../vector.js');
 var Beam = require('../beam.js');
-var Constants = require('../beam_constants.js');
+var Constants = require('../constants.js');
 
 describe('basic beam functions', function(){
         describe('photon', function(){
@@ -15,8 +15,8 @@ describe('basic beam functions', function(){
                         var lon1 = 2;
                         var beacon = Beam.createPhoton(lat1, lon1);
                         var position = Beam.getPosition(beacon);
-                        var lat2 = mathjs.subset(position, mathjs.index(0));
-                        var lon2 = mathjs.subset(position, mathjs.index(1));
+                        var lat2 = position[0];
+                        var lon2 = position[1];
                         expect(lat1).to.equal(lat2);
                         expect(lon1).to.equal(lon2);
                 });
@@ -46,8 +46,8 @@ describe('basic beam functions', function(){
                         var b2 = Beam.createPhoton(20, 30);
                         var beam = Beam.addBeams(b1, b2);
                         var position = Beam.getPosition(beam);
-                        var lat = mathjs.subset(position, mathjs.index(0));
-                        var lon = mathjs.subset(position, mathjs.index(1));
+                        var lat = position[0];
+                        var lon = position[1];
                         expect(lat).to.equal(15);
                         expect(lon).to.equal(20);
                 });
