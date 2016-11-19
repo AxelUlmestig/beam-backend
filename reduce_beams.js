@@ -1,25 +1,19 @@
 var Beam = require('./beam');
 
-var reduceBeams = function(beams) {
-        if(beams.length <= 1) {
-                return beams;
+var reduceBeams = beams => reduceBeamsInternal([], beams)
+
+var reduceBeamsInternal = function(behind, ahead) {
+        if(ahead.length == 0) {
+                return behind;
         }
-        var current = beams.shift();
-        return reduceBeamsInternal([], current, beams);
+        var reducedAhead = reduceHead(ahead);
+        behind.unshift(reducedAhead.shift());
+        var reducedBehind = reduceHead(behind);
+        return reduceBeamsInternal(reducedBehind, reducedAhead);
 }
 
-var reduceBeamsInternal = function(behind, current, before) {
-        var reducedBefore = reduceHead(current, before);
-        current = reducedBefore.pop();
-        var reducedBehind = reduceHead(current, behind);
-        current = reducedBefore.shift();
-        if(!current) {
-                return reducedBehind;
-        }
-        return reduceBeamsInternal(reducedBehind, current, reducedBefore);
-}
-
-var reduceHead = function(devourer, beams) {
+var reduceHead = function(beams) {
+        var devourer = beams.shift();
         var output = [];
         beams.forEach(function(beam) {
                 if(shouldMerge(devourer, beam)){
