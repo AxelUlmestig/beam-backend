@@ -1,15 +1,19 @@
 var Beam = require('./beam');
 
-var reduceBeams = beams => reduceBeamsInternal([], beams)
-
-var reduceBeamsInternal = function(behind, ahead) {
+/*
+ * Check all the beams against all the other beams
+ * one by one.
+ * 'behind' contains the beams that are checked
+ * and 'ahead' contains the beams are not checked.
+ */
+var reduceBeams = function(behind, ahead) {
         if(ahead.length == 0) {
                 return behind;
         }
         var reducedAhead = reduceHead(ahead);
         behind.unshift(reducedAhead.shift());
         var reducedBehind = reduceHead(behind);
-        return reduceBeamsInternal(reducedBehind, reducedAhead);
+        return reduceBeams(reducedBehind, reducedAhead);
 }
 
 var reduceHead = function(beams) {
@@ -22,7 +26,7 @@ var reduceHead = function(beams) {
                         output.push(beam);
                 }
         });
-        output.push(devourer);
+        output.unshift(devourer);
         return output;
 }
 
@@ -32,4 +36,4 @@ var shouldMerge = function(b1, b2) {
         return mergedRad >= groupRad;
 }
 
-module.exports = reduceBeams
+module.exports = beams => reduceBeams([], beams)
