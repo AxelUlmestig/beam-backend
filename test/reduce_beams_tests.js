@@ -1,7 +1,8 @@
 const expect = require('chai').expect;
-const Beam = require('../beam');
+
+const Beam = require('../src/beam');
+const reduceBeams = require('../src/reduce_beams');
 const Constants = require('../constants.json');
-const reduceBeams = require('../reduce_beams');
 
 describe('reduceBeams', () => {
     it('two close photons', () => {

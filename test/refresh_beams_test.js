@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
-const refreshBeams = require('../refresh_beams');
-const Beam = require('../beam');
+
+const refreshBeams = require('../src/refresh_beams');
+const Beam = require('../src/beam');
 
 describe('refresh beams', () => {
     it('one old, one fresh', () => {

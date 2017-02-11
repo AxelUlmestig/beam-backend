@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
-const Vector = require('../vector');
-const Beam = require('../beam');
+
+const Vector = require('../src/vector');
+const Beam = require('../src/beam');
 const Constants = require('../constants.json');
 
 describe('basic beam functions', () => {

@@ -1,6 +1,6 @@
 const Beam = require('./beam');
-const Constants = require('./constants.json');
 const reduceBeams = require('./reduce_beams');
+const Constants = require('../constants.json');
 
 const refreshBeams = (timestamp, beams) =>
 	beams.reduce((refreshed, beam) =>

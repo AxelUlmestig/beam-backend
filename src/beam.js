@@ -1,5 +1,5 @@
 const Vector = require('./vector');
-const Constants = require('./constants.json');
+const Constants = require('../constants.json');
 
 const createPhoton = (lat, lon) =>
     ({

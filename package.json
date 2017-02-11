@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "A client that organizes beams",
   "scripts": {
-    "start": "node app.js",
-    "background": "nohup node app.js &",
+    "start": "node src/app.js",
+    "background": "nohup node src/app.js &",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "dependencies": {
