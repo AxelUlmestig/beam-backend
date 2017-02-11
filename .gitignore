@@ -1,2 +1,4 @@
 *.swp
 node_modules
+nohup.out
+npm-debug.log
