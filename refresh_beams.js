@@ -1,29 +1,26 @@
-var Beam = require('./beam');
-var Constants = require('./constants.json');
-var reduceBeams = require('./reduce_beams');
+const Beam = require('./beam');
+const Constants = require('./constants.json');
+const reduceBeams = require('./reduce_beams');
 
-var refreshBeams = function(timestamp, beams) {
-	return beams.reduce(function(refreshed, beam){
-		var refreshedBeam = refreshBeam(timestamp, beam);
-		return refreshed.concat(refreshedBeam);
-	}, []);
+const refreshBeams = (timestamp, beams) =>
+	beams.reduce((refreshed, beam) =>
+        refreshed.concat(refreshBeam(timestamp, beam))
+	, [])
+
+const refreshBeam = (timestamp, beam) => {
+    const beamTimestamp = Beam.getTimestamp(beam);
+    const limit = timestamp - Constants.BEACON_DURATION;
+    if(beamTimestamp > limit){
+        return [beam];
+    }
+    if(beam.isPhoton) {
+        return [];
+    }
+    return refreshBeams(timestamp, [beam.beam1, beam.beam2]);
 }
 
-var refreshBeam = function(timestamp, beam) {
-        var beamTimestamp = Beam.getTimestamp(beam);
-        var limit = timestamp - Constants.BEACON_DURATION;
-        if(beamTimestamp > limit){
-                return [beam];
-        }
-        if(beam.isPhoton) {
-                return [];
-        }
-        return refreshBeams(timestamp, [beam.beam1, beam.beam2]);
-}
-
-module.exports = function(beams) {
-        var timestamp = Date.now() / 1000;
-        var refreshed = refreshBeams(timestamp, beams);
-        var reduced = reduceBeams(refreshed);
-        return reduced;
+module.exports = beams => {
+    const timestamp = Date.now() / 1000;
+    const refreshed = refreshBeams(timestamp, beams);
+    return reduceBeams(refreshed);
 }

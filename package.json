@@ -4,7 +4,7 @@
   "description": "A client that organizes beams",
   "scripts": {
     "start": "node app.js",
-    "background": "nohup nodejs app.js &",
+    "background": "nohup node app.js &",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "dependencies": {

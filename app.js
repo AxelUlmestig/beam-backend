@@ -1,37 +1,37 @@
-var mqtt = require('mqtt');
-var Beam = require('./beam');
-var refreshBeams = require('./refresh_beams');
-var reduceBeams = require('./reduce_beams');
-var Constants = require('./constants');
+const mqtt = require('mqtt');
+const Beam = require('./beam');
+const refreshBeams = require('./refresh_beams');
+const reduceBeams = require('./reduce_beams');
+const Constants = require('./constants');
 
-var client = mqtt.connect(Constants.HOST);
-var incomingChannel = Constants.PUBLISH_CHANNEL;
-var outgoingChannel = Constants.UPDATES_CHANNEL;
+const client = mqtt.connect(Constants.HOST);
+const incomingChannel = Constants.PUBLISH_CHANNEL;
+const outgoingChannel = Constants.UPDATES_CHANNEL;
 
-var beams = [];
+let beams = [];
 
-client.on('connect', function () {
-        console.log('connected');
-	client.subscribe(incomingChannel);
+client.on('connect', () => {
+    console.log('connected');
+    client.subscribe(incomingChannel);
 });
  
-client.on('message', function (topic, message_buffer) {
-        console.log('message received');
-        var message = JSON.parse(message_buffer.toString());
-        
-        //TODO validate data
-        var photon = Beam.createPhoton(message.lat, message.lon);
-        beams.push(photon);
-        beams = reduceBeams(beams);
-        publish();
-        setTimeout(publish, Constants.BEACON_DURATION * 1000);
-});
-
-function publish() {
-        beams = refreshBeams(beams);
-	var options = {
-		retain: true
-	};
-        client.publish(outgoingChannel, Beam.stringify(beams), options);
-        console.log('published beams: ' + Beam.stringify(beams));
+publish = () => {
+    beams = refreshBeams(beams);
+    const options = {
+        retain: true
+    };
+    client.publish(outgoingChannel, Beam.stringify(beams), options);
+    console.log('published beams: ' + Beam.stringify(beams));
 }
+
+client.on('message', (topic, message_buffer) => {
+    console.log('message received');
+    const message = JSON.parse(message_buffer.toString());
+
+    //TODO validate data
+    const photon = Beam.createPhoton(message.lat, message.lon);
+    beams.push(photon);
+    beams = reduceBeams(beams);
+    publish();
+    setTimeout(publish, Constants.BEACON_DURATION * 1000);
+});
