@@ -1,17 +1,15 @@
 const Vector = require('./vector');
 const Constants = require('./constants.json');
 
-createPhoton = (lat, lon) => {
-    const timestamp = Date.now() / 1000;
-    return {
+const createPhoton = (lat, lon) =>
+    ({
         radius: Constants.BEACON_RADIUS,
-        timestamp: timestamp,
+        timestamp: Date.now() / 1000,
         position: [lat, lon],
         isPhoton: true
-    }
-}
+    })
 
-getPosition = beam => {
+const getPosition = beam => {
     if(beam.position) {
         return beam.position;
     }
@@ -27,7 +25,7 @@ getPosition = beam => {
     return weightedSum;
 }
 
-getRadius = beam => {
+const getRadius = beam => {
     if(beam.radius) {
         return beam.radius;
     }
@@ -37,7 +35,7 @@ getRadius = beam => {
     return beam.radius;
 }
 
-getTimestamp = beam => {
+const getTimestamp = beam => {
     if(beam.timestamp != null) {
         return beam.timestamp;
     }
@@ -47,13 +45,13 @@ getTimestamp = beam => {
     return beam.timestamp;
 }
 
-getDistance = (b1, b2) => {
+const getDistance = (b1, b2) => {
     const pos1 = getPosition(b1);
     const pos2 = getPosition(b2);
     return Vector.distance(pos1, pos2);
 }
 
-addBeams = (b1, b2) => ({
+const addBeams = (b1, b2) => ({
     beam1: b1,
     beam2: b2
 })
@@ -67,7 +65,7 @@ const simplify = beam =>{
     }
 }
 
-stringify = beam => {
+const stringify = beam => {
     if(Array.isArray(beam)) {
         const simpleBeams = beam.map(simplify);
         return JSON.stringify(simpleBeams);
@@ -77,11 +75,11 @@ stringify = beam => {
 }
 
 module.exports = {
-    createPhoton: createPhoton,
-    getPosition: getPosition,
-    getRadius: getRadius,
-    getTimestamp: getTimestamp,
-    getDistance: getDistance,
-    addBeams: addBeams,
-    stringify: stringify
+    createPhoton:   createPhoton,
+    getPosition:    getPosition,
+    getRadius:      getRadius,
+    getTimestamp:   getTimestamp,
+    getDistance:    getDistance,
+    addBeams:       addBeams,
+    stringify:      stringify
 }

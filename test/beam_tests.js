@@ -23,7 +23,7 @@ describe('basic beam functions', () => {
         it('distance', () => {
             const b1 = Beam.createPhoton(0, 0);
             const b2 = Beam.createPhoton(3, 4);
-            const distance = getDistance(b1, b2);
+            const distance = Beam.getDistance(b1, b2);
             expect(distance).to.be.closeTo(5, 0.001);
         });
         it('timestamp', () => {
@@ -55,7 +55,7 @@ describe('basic beam functions', () => {
             const b1 = Beam.createPhoton(0, 0);
             const b2 = Beam.createPhoton(6, 8);
             const beam = Beam.addBeams(b1, b2);
-            const distance = getDistance(b1, beam);
+            const distance = Beam.getDistance(b1, beam);
             expect(distance).to.be.closeTo(5, 0.001);
         });
         it('timestamp', () => {
