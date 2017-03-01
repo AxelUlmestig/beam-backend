@@ -1,0 +1,4 @@
+To build docker image run the docker.sh shell script
+
+To start mqtt server run the following docker image
+docker run -d -tip 1883:1883 -p 8080:9001 --name mosquitto pascaldevink/rpi-mosquitto
