@@ -3,11 +3,11 @@ const reduceBeams = require('./reduce_beams');
 const Constants = require('../constants.json');
 
 const refreshBeams = (timestamp, beams) =>
-	beams.reduce((refreshed, beam) =>
-        refreshed.concat(refreshBeam(timestamp, beam))
-	, [])
+    beams
+    .map(refreshBeam(timestamp))
+    .reduce((all, refreshed) => all.concat(refreshed), [])
 
-const refreshBeam = (timestamp, beam) => {
+const refreshBeam = timestamp => beam => {
     const beamTimestamp = Beam.getTimestamp(beam);
     const limit = timestamp - Constants.BEACON_DURATION;
     if(beamTimestamp > limit){
